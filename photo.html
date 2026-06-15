@@ -25,7 +25,16 @@ body{
   cursor:grab;
   user-select:none;
 }
-
+.zoomed{
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto !important;
+  z-index: 9999 !important;
+}
 </style>
 
 </head>
@@ -83,11 +92,17 @@ images.forEach(img => {
 
   });
 
-  document.addEventListener("mouseup", () => {
+document.addEventListener("mouseup", () => {
 
-    isDragging = false;
+  isDragging = false;
 
-  });
+});
+
+img.addEventListener("dblclick", () => {
+
+  img.classList.toggle("zoomed");
+
+});
 
 });
 
