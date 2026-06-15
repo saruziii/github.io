@@ -21,39 +21,37 @@ body{
 }
 
 .drag{
-position:absolute;
-cursor:grab;
-user-select:none;
-
-touch-action:none;
--webkit-user-drag:none;
--webkit-touch-callout:none;
+  position:absolute;
+  cursor:grab;
+  user-select:none;
 }
 
 .zoomed{
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%);
-  max-width: 90vw;
-  max-height: 90vh;
-  width: auto !important;
-  z-index: 9999 !important;
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%);
+  max-width:90vw;
+  max-height:90vh;
+  width:auto !important;
+  z-index:9999 !important;
 }
-  
+
 #overlay{
   position:fixed;
   top:0;
   left:0;
   width:100vw;
   height:100vh;
-  background:rgba(0,0,0,0.7);
+  background:rgba(0,0,0,0.75);
   display:none;
   z-index:9998;
 }
+
 #overlay.active{
   display:block;
-}  
+}
+
 </style>
 
 </head>
@@ -64,47 +62,20 @@ touch-action:none;
 
 <div id="canvas">
 
-<img class="drag"
-    draggable="false"
-    src="DSC_0081.JPG"
-    width="320"
-    style="top:100px; left:100px;">
+<img class="drag" src="DSC_0081.JPG" width="320" style="top:100px; left:100px;">
+<img class="drag" src="DSC_0084.JPG" width="320" style="top:250px; left:500px;">
+<img class="drag" src="DSC_0085.JPG" width="320" style="top:500px; left:900px;">
+<img class="drag" src="DSC_0018.JPG" width="320" style="top:500px; left:700px;">
+<img class="drag" src="DSC_0398.JPG" width="320" style="top:600px; left:500px;">
+<img class="drag" src="DSC_0582.JPG" width="320" style="top:300px; left:600px;">
 
-<img class="drag"
-    draggable="false"
-    src="DSC_0084.JPG"
-    width="320"
-    style="top:250px; left:500px;">
-  
-<img class="drag"
-     draggable="false"
-     src="DSC_0085.JPG"
-     width="320"
-     style="top:500px; left:900px;">
-  
-<img class="drag"
-     draggable="false"
-     src="DSC_0018.JPG"
-     width="320"
-     style="top:500px; left:700px;">
-
-<img class="drag"
-     draggable="false"
-     src="DSC_0398.JPG"
-     width="320"
-     style="top:600px; left:500px;"> 
-
-<img class="drag"
-     draggable="false"
-     src="DSC_0582.JPG"
-     width="320"
-     style="top:300px; left:600px;"> 
-  
 </div>
 
 <script>
 
 const images = document.querySelectorAll(".drag");
+const overlay = document.getElementById("overlay");
+
 let highestZ = 1;
 
 images.forEach(img => {
@@ -143,30 +114,30 @@ images.forEach(img => {
   });
 
   document.addEventListener("mouseup", stopDrag);
- const overlay = document.getElementById("overlay");
 
-img.addEventListener("dblclick", () => {
+  img.addEventListener("dblclick", () => {
 
-img.classList.toggle("zoomed");
+    img.classList.toggle("zoomed");
 
-if(img.classList.contains("zoomed")){
-overlay.classList.add("active");
-} else {
-overlay.classList.remove("active");
-}
+    if(img.classList.contains("zoomed")){
+      overlay.classList.add("active");
+    } else {
+      overlay.classList.remove("active");
+    }
+
+  });
 
 });
 
 overlay.addEventListener("click", () => {
 
-overlay.classList.remove("active");
+  overlay.classList.remove("active");
 
-document.querySelectorAll(".drag").forEach(img => {
-img.classList.remove("zoomed");
+  document.querySelectorAll(".drag").forEach(img => {
+    img.classList.remove("zoomed");
+  });
+
 });
-
-});
-
 
 </script>
 
