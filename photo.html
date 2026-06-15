@@ -127,7 +127,11 @@ images.forEach(img => {
   });
 
   document.addEventListener("mouseup", stopDrag);
-
+  
+　img.addEventListener("dblclick", () => {
+  img.classList.toggle("zoomed");   
+});
+  
 });
 
 </script>
