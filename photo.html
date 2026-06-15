@@ -31,24 +31,13 @@ body{
 }
 
 .zoomed{
-  position:fixed !important;
-  top:50% !important;
-  left:50% !important;
+position:fixed !important;
+top:50% !important;
+left:50% !important;
 
-  transform:translate(-50%, -50%);
+transform:translate(-50%, -50%) scale(1.5);
 
-  width:60vw !important;
-  height:auto !important;
-
-  z-index:9999 !important;
-}
-
-@media (max-width:768px){
-
-  .zoomed{
-    width:90vw !important;
-  }
-
+z-index:9999 !important;
 }
 
 #overlay{
