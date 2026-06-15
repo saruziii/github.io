@@ -82,42 +82,63 @@ let highestZ = 1;
 
 images.forEach(img => {
 
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
 
-  img.addEventListener("mousedown", (e) => {
+function startDrag(x, y){
+isDragging = true;
 
-    isDragging = true;
+```
+offsetX = x - img.offsetLeft;
+offsetY = y - img.offsetTop;
 
-    offsetX = e.clientX - img.offsetLeft;
-    offsetY = e.clientY - img.offsetTop;
+highestZ++;
+img.style.zIndex = highestZ;
+```
 
-    highestZ++;
-    img.style.zIndex = highestZ;
+}
 
-  });
+function moveDrag(x, y){
+if(!isDragging) return;
 
-  document.addEventListener("mousemove", (e) => {
+```
+img.style.left = (x - offsetX) + "px";
+img.style.top = (y - offsetY) + "px";
+```
 
-    if(!isDragging) return;
+}
 
-    img.style.left = (e.clientX - offsetX) + "px";
-    img.style.top = (e.clientY - offsetY) + "px";
-
-  });
-
-document.addEventListener("mouseup", () => {
+function stopDrag(){
 isDragging = false;
+}
+
+
+img.addEventListener("mousedown", (e) => {
+startDrag(e.clientX, e.clientY);
+});
+
+document.addEventListener("mousemove", (e) => {
+moveDrag(e.clientX, e.clientY);
+});
+
+document.addEventListener("mouseup", stopDrag);
+
+
+img.addEventListener("touchstart", (e) => {
+const touch = e.touches[0];
+startDrag(touch.clientX, touch.clientY);
+});
+
+document.addEventListener("touchmove", (e) => {
+const touch = e.touches[0];
+moveDrag(touch.clientX, touch.clientY);
+});
+
+document.addEventListener("touchend", stopDrag);
 
 });
 
-img.addEventListener("dblclick", () => {
-img.classList.toggle("zoomed");
-
-});
-
-});
 
 </script>
 
