@@ -60,6 +60,8 @@ touch-action:none;
 
 <body>
 
+<div id="overlay"></div>
+
 <div id="canvas">
 
 <img class="drag"
@@ -141,8 +143,30 @@ images.forEach(img => {
   });
 
   document.addEventListener("mouseup", stopDrag);
-  img.addEventListener("dblclick", () => {
-  img.classList.toggle("zoomed");   
+  const overlay = document.getElementById("overlay");
+
+img.addEventListener("dblclick", () => {
+
+img.classList.toggle("zoomed");
+
+if(img.classList.contains("zoomed")){
+overlay.classList.add("active");
+} else {
+overlay.classList.remove("active");
+}
+
+});
+
+overlay.addEventListener("click", () => {
+
+overlay.classList.remove("active");
+
+document.querySelectorAll(".drag").forEach(img => {
+img.classList.remove("zoomed");
+});
+
+});
+
 });
 });
 
