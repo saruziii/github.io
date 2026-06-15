@@ -3,6 +3,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Photo</title>
 
 <style>
@@ -11,22 +12,18 @@ body{
   margin:0;
   background:white;
   overflow:auto;
-  cursor:default;
 }
 
 #canvas{
-  width:6000px;
-  height:4000px;
+  width:4000px;
+  height:3000px;
   position:relative;
 }
 
 .drag{
   position:absolute;
   cursor:grab;
-  user-select:none;}
-
-.drag:hover{
-  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  user-select:none;
 }
 
 </style>
@@ -35,23 +32,17 @@ body{
 
 <body>
 
-<div id="canvas"> 
-  
-<img class="drag"
-  src="DSC_0081.JPG"
-  width="320"
-  style="top:300px; left:200px;">
+<div id="canvas">
 
 <img class="drag"
-  src="DSC_0084.JPG"
-  width="260"
-  style="top:900px; left:1200px;">
-  
-<img class="drag"
-　 src="DSC_0085.JPG"
-   width="300"
-   style="top:100px; left:900px;">
+    src="DSC_0081.JPG"
+    width="320"
+    style="top:100px; left:100px;">
 
+<img class="drag"
+    src="DSC_0084.JPG"
+    width="320"
+    style="top:250px; left:500px;">
 
 </div>
 
@@ -93,8 +84,8 @@ images.forEach(img => {
 
   });
 
-
 });
+
 </script>
 
 </body>
