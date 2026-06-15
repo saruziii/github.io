@@ -74,6 +74,31 @@ body{
 <script>
 
 const images = document.querySelectorAll(".drag");
+const savedPositions =
+JSON.parse(
+localStorage.getItem("alreadythere_positions")
+);
+
+if(savedPositions){
+
+images.forEach((img,index) => {
+
+```
+if(savedPositions[index]){
+
+  img.style.left =
+  savedPositions[index].left;
+
+  img.style.top =
+  savedPositions[index].top;
+
+}
+```
+
+});
+
+}
+
 const overlay = document.getElementById("overlay");
 
 let highestZ = 1;
@@ -101,9 +126,27 @@ images.forEach(img => {
     img.style.top = (y - offsetY) + "px";
   }
 
-  function stopDrag(){
-    isDragging = false;
-  }
+function stopDrag(){
+isDragging = false;
+const positions = [];
+
+document.querySelectorAll(".drag").forEach((img,index) => {
+
+```
+positions.push({
+  left: img.style.left,
+  top: img.style.top
+});
+```
+
+});
+
+localStorage.setItem(
+"alreadythere_positions",
+JSON.stringify(positions)
+);
+
+}
 
   img.addEventListener("mousedown", (e) => {
     startDrag(e.clientX, e.clientY);
