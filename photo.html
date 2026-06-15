@@ -158,6 +158,35 @@ images.forEach(img => {
   });
 
   document.addEventListener("mouseup", stopDrag);
+　img.addEventListener("touchstart", (e) => {
+
+e.preventDefault();
+
+const touch = e.touches[0];
+
+startDrag(
+touch.clientX,
+touch.clientY
+);
+
+}, { passive:false });
+
+document.addEventListener("touchmove", (e) => {
+
+if(!isDragging) return;
+
+e.preventDefault();
+
+const touch = e.touches[0];
+
+moveDrag(
+touch.clientX,
+touch.clientY
+);
+
+}, { passive:false });
+
+document.addEventListener("touchend", stopDrag);
 
   img.addEventListener("dblclick", () => {
 
