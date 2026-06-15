@@ -65,134 +65,57 @@
 
 <script>
 
-const images = document.querySelectorAll(".drag");
-const overlay = document.getElementById("overlay");
+<style>
 
-const savedPositions = JSON.parse(
-  localStorage.getItem("alreadythere_positions")
-);
-
-if(savedPositions){
-
-  images.forEach((img,index) => {
-
-    if(savedPositions[index]){
-
-      img.style.left = savedPositions[index].left;
-      img.style.top = savedPositions[index].top;
-
-    }
-
-  });
-
+body{
+  margin:0;
+  background:white;
+  overflow:auto;
 }
 
-let highestZ = 1;
+#canvas{
+  width:4000px;
+  height:3000px;
+  position:relative;
+}
 
-images.forEach(img => {
+.drag{
+  position:absolute;
+  cursor:grab;
+  user-select:none;
 
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+  touch-action:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
+}
 
-  function startDrag(x, y){
+.zoomed{
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%);
+  max-width:90vw;
+  max-height:90vh;
+  width:auto !important;
+  z-index:9999 !important;
+}
 
-    isDragging = true;
+#overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  z-index:9998;
+}
 
-    offsetX = x - img.offsetLeft;
-    offsetY = y - img.offsetTop;
+#overlay.active{
+  display:block;
+}
 
-    highestZ++;
-    img.style.zIndex = highestZ;
-
-  }
-
-  function moveDrag(x, y){
-
-    if(!isDragging) return;
-
-    img.style.left = (x - offsetX) + "px";
-    img.style.top = (y - offsetY) + "px";
-
-  }
-
-  function stopDrag(){
-
-    if(!isDragging) return;
-
-    isDragging = false;
-
-    const positions = [];
-
-    document.querySelectorAll(".drag").forEach(img => {
-
-      positions.push({
-        left: img.style.left,
-        top: img.style.top
-      });
-
-    });
-
-    localStorage.setItem(
-      "alreadythere_positions",
-      JSON.stringify(positions)
-    );
-
-  }
-
-  // PC / iPhone / Android 共通
-  img.addEventListener("pointerdown", (e) => {
-
-    e.preventDefault();
-
-    startDrag(
-      e.clientX,
-      e.clientY
-    );
-
-  });
-
-  document.addEventListener("pointermove", (e) => {
-
-    moveDrag(
-      e.clientX,
-      e.clientY
-    );
-
-  });
-
-  document.addEventListener("pointerup", () => {
-
-    stopDrag();
-
-  });
-
-  // 拡大
-  img.addEventListener("dblclick", () => {
-
-    img.classList.toggle("zoomed");
-
-    if(img.classList.contains("zoomed")){
-      overlay.classList.add("active");
-    } else {
-      overlay.classList.remove("active");
-    }
-
-  });
-
-});
-
-overlay.addEventListener("click", () => {
-
-  overlay.classList.remove("active");
-
-  document.querySelectorAll(".drag").forEach(img => {
-    img.classList.remove("zoomed");
-  });
-
-});
-
-</script>
+</style>
 
 </body>
 </html>
