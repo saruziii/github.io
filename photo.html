@@ -74,17 +74,17 @@ body{
 <script>
 
 const images = document.querySelectorAll(".drag");
-const savedPositions =
-JSON.parse(
-localStorage.getItem("alreadythere_positions")
+const overlay = document.getElementById("overlay");
+
+const savedPositions = JSON.parse(
+  localStorage.getItem("alreadythere_positions")
 );
 
 if(savedPositions){
 
-images.forEach((img,index) => {
+  images.forEach((img,index) => {
 
-
-if(savedPositions[index]){
+  if(savedPositions[index]){
 
   img.style.left =
   savedPositions[index].left;
@@ -94,12 +94,9 @@ if(savedPositions[index]){
 
 }
 
-
 });
 
 }
-
-const overlay = document.getElementById("overlay");
 
 let highestZ = 1;
 
@@ -110,6 +107,7 @@ images.forEach(img => {
   let offsetY = 0;
 
   function startDrag(x, y){
+
     isDragging = true;
 
     offsetX = x - img.offsetLeft;
@@ -117,35 +115,39 @@ images.forEach(img => {
 
     highestZ++;
     img.style.zIndex = highestZ;
+
   }
 
   function moveDrag(x, y){
+
     if(!isDragging) return;
 
     img.style.left = (x - offsetX) + "px";
     img.style.top = (y - offsetY) + "px";
+
   }
 
-function stopDrag(){
-isDragging = false;
-const positions = [];
+  function stopDrag(){
 
-document.querySelectorAll(".drag").forEach((img,index) => {
+    isDragging = false;
 
+    const positions = [];
 
-positions.push({
-  left: img.style.left,
-  top: img.style.top
-});
+    document.querySelectorAll(".drag").forEach(img => {
 
-});
+      positions.push({
+        left: img.style.left,
+        top: img.style.top
+　});
 
-localStorage.setItem(
-"alreadythere_positions",
-JSON.stringify(positions)
-);
+  });
 
-}
+    localStorage.setItem(
+      "alreadythere_positions",
+      JSON.stringify(positions)
+  );
+
+  }
 
   img.addEventListener("mousedown", (e) => {
     startDrag(e.clientX, e.clientY);
@@ -180,6 +182,7 @@ overlay.addEventListener("click", () => {
 });
 
 });
+
 
 </script>
 
