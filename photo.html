@@ -84,17 +84,14 @@ if(savedPositions){
 
   images.forEach((img,index) => {
 
-  if(savedPositions[index]){
+    if(savedPositions[index]){
 
-  img.style.left =
-  savedPositions[index].left;
+      img.style.left = savedPositions[index].left;
+      img.style.top = savedPositions[index].top;
 
-  img.style.top =
-  savedPositions[index].top;
+    }
 
-}
-
-});
+  });
 
 }
 
@@ -129,6 +126,8 @@ images.forEach(img => {
 
   function stopDrag(){
 
+    if(!isDragging) return;
+
     isDragging = false;
 
     const positions = [];
@@ -138,56 +137,45 @@ images.forEach(img => {
       positions.push({
         left: img.style.left,
         top: img.style.top
-　});
+      });
 
-  });
+    });
 
     localStorage.setItem(
       "alreadythere_positions",
       JSON.stringify(positions)
-  );
+    );
 
   }
 
-  img.addEventListener("mousedown", (e) => {
-    startDrag(e.clientX, e.clientY);
+  // PC / iPhone / Android 共通
+  img.addEventListener("pointerdown", (e) => {
+
+    e.preventDefault();
+
+    startDrag(
+      e.clientX,
+      e.clientY
+    );
+
   });
 
-  document.addEventListener("mousemove", (e) => {
-    moveDrag(e.clientX, e.clientY);
+  document.addEventListener("pointermove", (e) => {
+
+    moveDrag(
+      e.clientX,
+      e.clientY
+    );
+
   });
 
-  document.addEventListener("mouseup", stopDrag);
-　img.addEventListener("touchstart", (e) => {
+  document.addEventListener("pointerup", () => {
 
-e.preventDefault();
+    stopDrag();
 
-const touch = e.touches[0];
+  });
 
-startDrag(
-touch.clientX,
-touch.clientY
-);
-
-}, { passive:false });
-
-document.addEventListener("touchmove", (e) => {
-
-if(!isDragging) return;
-
-e.preventDefault();
-
-const touch = e.touches[0];
-
-moveDrag(
-touch.clientX,
-touch.clientY
-);
-
-}, { passive:false });
-
-document.addEventListener("touchend", stopDrag);
-
+  // 拡大
   img.addEventListener("dblclick", () => {
 
     img.classList.toggle("zoomed");
@@ -198,7 +186,7 @@ document.addEventListener("touchend", stopDrag);
       overlay.classList.remove("active");
     }
 
-});
+  });
 
 });
 
@@ -208,10 +196,9 @@ overlay.addEventListener("click", () => {
 
   document.querySelectorAll(".drag").forEach(img => {
     img.classList.remove("zoomed");
-});
+  });
 
 });
-
 
 </script>
 
