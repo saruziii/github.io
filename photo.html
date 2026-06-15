@@ -56,7 +56,10 @@ body{
 </div>
 
 <script>
-
+.zoomed{
+  transform: scale(2);
+  z-index: 9999 !important;
+}
 const images = document.querySelectorAll(".drag");
 let highestZ = 1;
 
@@ -94,8 +97,32 @@ images.forEach(img => {
   });
 
 });
+.zoomed{
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(2);
+  z-index: 9999 !important;
+}
+  images.forEach(img => {
 
+  img.addEventListener("dblclick", () => {
+
+    img.classList.toggle("zoomed");
+
+  });
+
+});
 </script>
 
 </body>
 </html>
+images.forEach(img => {
+
+  img.addEventListener("dblclick", () => {
+
+    img.classList.toggle("zoomed");
+
+  });
+
+});
