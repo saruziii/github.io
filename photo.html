@@ -8,22 +8,14 @@
 
 <style>
 
-body{
-  margin:0;
-  background:white;
-  overflow:auto;
-}
-
-#canvas{
-  width:4000px;
-  height:3000px;
-  position:relative;
-}
-
 .drag{
   position:absolute;
   cursor:grab;
   user-select:none;
+
+  touch-action:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
 }
 
 .zoomed{
