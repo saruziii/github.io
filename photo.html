@@ -40,6 +40,22 @@ touch-action:none;
   width: auto !important;
   z-index: 9999 !important;
 }
+  
+#overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  z-index:9998;
+}
+
+#overlay.active{
+  display:block;
+}
+  
 </style>
 
 </head>
