@@ -88,67 +88,51 @@ touch-action:none;
 
 <script>
 
+<script>
+
 const images = document.querySelectorAll(".drag");
 let highestZ = 1;
 
 images.forEach(img => {
 
-let isDragging = false;
-let offsetX = 0;
-let offsetY = 0;
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
 
-function startDrag(x, y){
-isDragging = true;
+  function startDrag(x, y){
+    isDragging = true;
 
-offsetX = x - img.offsetLeft;
-offsetY = y - img.offsetTop;
+    offsetX = x - img.offsetLeft;
+    offsetY = y - img.offsetTop;
 
-highestZ++;
-img.style.zIndex = highestZ;
-}
+    highestZ++;
+    img.style.zIndex = highestZ;
+  }
 
-function moveDrag(x, y){
+  function moveDrag(x, y){
+    if(!isDragging) return;
 
-if(!isDragging) return;
+    img.style.left = (x - offsetX) + "px";
+    img.style.top = (y - offsetY) + "px";
+  }
 
-img.style.left = (x - offsetX) + "px";
-img.style.top = (y - offsetY) + "px";
-}
+  function stopDrag(){
+    isDragging = false;
+  }
 
+  img.addEventListener("mousedown", (e) => {
+    startDrag(e.clientX, e.clientY);
+  });
 
-function stopDrag(){
-isDragging = false;
-}
+  document.addEventListener("mousemove", (e) => {
+    moveDrag(e.clientX, e.clientY);
+  });
 
-img.addEventListener("mousedown", (e) => {
-startDrag(e.clientX, e.clientY);
-});
-
-document.addEventListener("mousemove", (e) => {
-moveDrag(e.clientX, e.clientY);
-});
-
-document.addEventListener("mouseup", stopDrag);
-
-img.addEventListener("touchstart", (e) => {
-
-e.preventDefault();
-
-const touch = e.touches[0];
-
-startDrag(touch.clientX, touch.clientY);
-
-}, { passive:false });
-
-document.addEventListener("touchmove", (e) => {
-e.preventDefault();
-const touch = e.touches[0];
-moveDrag(touch.clientX, touch.clientY);
-}, { passive:false });
-
-document.addEventListener("touchend", stopDrag);
+  document.addEventListener("mouseup", stopDrag);
 
 });
+
+</script>
 
 </script>
 
