@@ -8,8 +8,6 @@
 
 <style>
 
-<style>
-
 body{
   margin:0;
   background:white;
@@ -30,17 +28,30 @@ body{
   touch-action:none;
   -webkit-user-drag:none;
   -webkit-touch-callout:none;
+
+  pointer-events:auto;
 }
 
 .zoomed{
   position:fixed !important;
   top:50% !important;
   left:50% !important;
-  transform:translate(-50%, -50%);
+
+  transform:translate(-50%, -50%) scale(1.5);
+
   max-width:90vw;
   max-height:90vh;
   width:auto !important;
+
   z-index:9999 !important;
+}
+
+@media (max-width:768px){
+
+  .zoomed{
+    transform:translate(-50%, -50%) scale(2);
+  }
+
 }
 
 #overlay{
@@ -57,9 +68,6 @@ body{
 #overlay.active{
   display:block;
 }
-
-</style>
-
 
 </style>
 
@@ -82,57 +90,135 @@ body{
 
 <script>
 
-<style>
+const images = document.querySelectorAll(".drag");
+const overlay = document.getElementById("overlay");
 
-body{
-  margin:0;
-  background:white;
-  overflow:auto;
+const savedPositions = JSON.parse(
+  localStorage.getItem("alreadythere_positions")
+);
+
+if(savedPositions){
+
+  images.forEach((img,index) => {
+
+    if(savedPositions[index]){
+
+      img.style.left = savedPositions[index].left;
+      img.style.top = savedPositions[index].top;
+
+    }
+
+  });
+
 }
 
-#canvas{
-  width:4000px;
-  height:3000px;
-  position:relative;
-}
+let highestZ = 1;
 
-.drag{
-  position:absolute;
-  cursor:grab;
-  user-select:none;
+images.forEach(img => {
 
-  touch-action:none;
-  -webkit-user-drag:none;
-  -webkit-touch-callout:none;
-}
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
 
-.zoomed{
-  position:fixed !important;
-  top:50% !important;
-  left:50% !important;
-  transform:translate(-50%, -50%);
-  max-width:90vw;
-  max-height:90vh;
-  width:auto !important;
-  z-index:9999 !important;
-}
+  function startDrag(x,y){
 
-#overlay{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  background:rgba(0,0,0,0.75);
-  display:none;
-  z-index:9998;
-}
+    isDragging = true;
 
-#overlay.active{
-  display:block;
-}
+    offsetX = x - img.offsetLeft;
+    offsetY = y - img.offsetTop;
 
-</style>
+    highestZ++;
+    img.style.zIndex = highestZ;
+
+  }
+
+  function moveDrag(x,y){
+
+    if(!isDragging) return;
+
+    img.style.left = (x - offsetX) + "px";
+    img.style.top = (y - offsetY) + "px";
+
+  }
+
+  function stopDrag(){
+
+    if(!isDragging) return;
+
+    isDragging = false;
+
+    const positions = [];
+
+    document.querySelectorAll(".drag").forEach(img => {
+
+      positions.push({
+        left: img.style.left,
+        top: img.style.top
+      });
+
+    });
+
+    localStorage.setItem(
+      "alreadythere_positions",
+      JSON.stringify(positions)
+    );
+
+  }
+
+  img.addEventListener("pointerdown", (e) => {
+
+    img.setPointerCapture(e.pointerId);
+
+    e.preventDefault();
+
+    startDrag(
+      e.clientX,
+      e.clientY
+    );
+
+  });
+
+  document.addEventListener("pointermove", (e) => {
+
+    moveDrag(
+      e.clientX,
+      e.clientY
+    );
+
+  });
+
+  document.addEventListener("pointerup", () => {
+
+    stopDrag();
+
+  });
+
+  img.addEventListener("dblclick", () => {
+
+    img.classList.toggle("zoomed");
+
+    if(img.classList.contains("zoomed")){
+      overlay.classList.add("active");
+    } else {
+      overlay.classList.remove("active");
+    }
+
+  });
+
+});
+
+overlay.addEventListener("click", () => {
+
+  overlay.classList.remove("active");
+
+  document.querySelectorAll(".drag").forEach(img => {
+    img.classList.remove("zoomed");
+  });
+
+});
+
+</script>
 
 </body>
 </html>
+
