@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<img class="drag"
-     src="新しい写真.JPG"
-     width="280"
-     style="top:1500px; left:2200px;">
+
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <title>Photo</title>
 
 <style>
+
 body{
   margin:0;
   background:white;
   overflow:auto;
+  cursor:default;
 }
 
 #canvas{
-  width:4000px;
-  height:3000px;
+  width:6000px;
+  height:4000px;
   position:relative;
 }
 
@@ -25,8 +24,13 @@ body{
   position:absolute;
   cursor:grab;
   user-select:none;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
+  transition:box-shadow .2s ease;
 }
+
+.drag:hover{
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+}
+
 </style>
 
 </head>
@@ -36,14 +40,14 @@ body{
 <div id="canvas">
 
 <img class="drag"
-    src="DSC_0081.JPG"
-    width="320"
-    style="top:300px; left:200px;">
+  src="DSC_0081.JPG"
+  width="320"
+  style="top:300px; left:200px; transform:rotate(-4deg);">
 
 <img class="drag"
-    src="DSC_0084.JPG"
-    width="260"
-    style="top:900px; left:1100px;">
+  src="DSC_0084.JPG"
+  width="260"
+  style="top:900px; left:1200px; transform:rotate(3deg);">
 
 </div>
 
@@ -75,7 +79,7 @@ images.forEach(img => {
     if(!isDragging) return;
 
     img.style.left = (e.clientX - offsetX) + "px";
-    img.style.top  = (e.clientY - offsetY) + "px";
+    img.style.top = (e.clientY - offsetY) + "px";
 
   });
 
