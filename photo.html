@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-
+<img class="drag"
+     src="新しい写真.JPG"
+     width="280"
+     style="top:1500px; left:2200px;">
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -9,9 +12,12 @@
 body{
   margin:0;
   background:white;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
+  overflow:auto;
+}
+
+#canvas{
+  width:4000px;
+  height:3000px;
   position:relative;
 }
 
@@ -19,6 +25,7 @@ body{
   position:absolute;
   cursor:grab;
   user-select:none;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 </style>
 
@@ -26,15 +33,24 @@ body{
 
 <body>
 
-<img class="drag" src="DSC_0081.JPG" width="300"
-  style="top:100px; left:100px;">
+<div id="canvas">
 
-<img class="drag" src="DSC_0084.JPG" width="300"
-  style="top:300px; left:500px;">
+<img class="drag"
+    src="DSC_0081.JPG"
+    width="320"
+    style="top:300px; left:200px;">
+
+<img class="drag"
+    src="DSC_0084.JPG"
+    width="260"
+    style="top:900px; left:1100px;">
+
+</div>
 
 <script>
 
 const images = document.querySelectorAll(".drag");
+let highestZ = 1;
 
 images.forEach(img => {
 
@@ -49,16 +65,17 @@ images.forEach(img => {
     offsetX = e.clientX - img.offsetLeft;
     offsetY = e.clientY - img.offsetTop;
 
-    img.style.zIndex = Date.now();
+    highestZ++;
+    img.style.zIndex = highestZ;
 
   });
 
   document.addEventListener("mousemove", (e) => {
 
-    if (!isDragging) return;
+    if(!isDragging) return;
 
     img.style.left = (e.clientX - offsetX) + "px";
-    img.style.top = (e.clientY - offsetY) + "px";
+    img.style.top  = (e.clientY - offsetY) + "px";
 
   });
 
