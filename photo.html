@@ -100,23 +100,21 @@ let offsetY = 0;
 function startDrag(x, y){
 isDragging = true;
 
-```
 offsetX = x - img.offsetLeft;
 offsetY = y - img.offsetTop;
 
 highestZ++;
 img.style.zIndex = highestZ;
-```
 }
 
 function moveDrag(x, y){
+
 if(!isDragging) return;
 
-```
 img.style.left = (x - offsetX) + "px";
 img.style.top = (y - offsetY) + "px";
-```
 }
+
 
 function stopDrag(){
 isDragging = false;
@@ -133,9 +131,14 @@ moveDrag(e.clientX, e.clientY);
 document.addEventListener("mouseup", stopDrag);
 
 img.addEventListener("touchstart", (e) => {
+
+e.preventDefault();
+
 const touch = e.touches[0];
+
 startDrag(touch.clientX, touch.clientY);
-});
+
+}, { passive:false });
 
 document.addEventListener("touchmove", (e) => {
 e.preventDefault();
