@@ -72,25 +72,43 @@ z-index:9999 !important;
 
 <div id="canvas">
 
-<img class="drag" src="DSC_0081.JPG" width="220" style="top:100px; left:100px;">
-<img class="drag" src="DSC_0084.JPG" width="220" style="top:150px; left:400px;">
-<img class="drag" src="DSC_0085.JPG" width="220" style="top:300px; left:700px;">
-<img class="drag" src="DSC_0018.JPG" width="220" style="top:500px; left:200px;">
-<img class="drag" src="DSC_0089.JPG" width="220" style="top:650px; left:600px;">
-<img class="drag" src="DSC_0015.JPG" width="220" style="top:850px; left:900px;">
-<img class="drag" src="DSC_1030.JPG" width="220" style="top:1050px; left:300px;">
-<img class="drag" src="DSC_0178.JPG" width="220" style="top:1250px; left:700px;">
-<img class="drag" src="DSC_0585.JPG" width="220" style="top:1450px; left:100px;">
-<img class="drag" src="DSC_0195.JPG" width="220" style="top:2850px; left:100px;">
-<img class="drag" src="DSC_0205.JPG" width="220" style="top:2450px; left:100px;">
-<img class="drag" src="DSC_0194.JPG" width="220" style="top:2950px; left:100px;">
-<img class="drag" src="DSC_0870.png" width="220" style="top:2930px; left:100px;">
+<div id="canvas">
+
+<img class="drag" src="DSC_0081.JPG" width="180">
+<img class="drag" src="DSC_0084.JPG" width="180">
+<img class="drag" src="DSC_0085.JPG" width="180">
+<img class="drag" src="DSC_0018.JPG" width="180">
+<img class="drag" src="DSC_0089.JPG" width="180">
+<img class="drag" src="DSC_0015.JPG" width="180">
+<img class="drag" src="DSC_1030.JPG" width="180">
+<img class="drag" src="DSC_0178.JPG" width="180">
+<img class="drag" src="DSC_0585.JPG" width="180">
+<img class="drag" src="DSC_0195.JPG" width="180">
+<img class="drag" src="DSC_0205.JPG" width="180">
+<img class="drag" src="DSC_0194.JPG" width="180">
+<img class="drag" src="DSC_0870.png" width="180">
 
 </div>
+
 
 <script>
 
 const images = document.querySelectorAll(".drag");
+  
+if(!localStorage.getItem("alreadythere_positions")){
+
+  images.forEach(img => {
+
+    img.style.left =
+      Math.floor(Math.random()*3200+100) + "px";
+
+    img.style.top =
+      Math.floor(Math.random()*2400+100) + "px";
+
+  });
+
+}
+
 const overlay = document.getElementById("overlay");
 
 const savedPositions = JSON.parse(
