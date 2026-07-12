@@ -72,23 +72,39 @@ z-index:9999 !important;
 
 <div id="canvas">
 
-<img class="drag" src="DSC_0398.JPG" width="220" style="top:100px; left:100px;">
-<img class="drag" src="DSC_0582.JPG" width="220" style="top:150px; left:450px;">
-<img class="drag" src="DSC_0471.JPG" width="220" style="top:350px; left:850px;">
-<img class="drag" src="DSC_0228.JPG" width="220" style="top:650px; left:180px;">
+<img class="drag" src="DSC_0398.JPG" width="220">
+<img class="drag" src="DSC_0582.JPG" width="220">
+<img class="drag" src="DSC_0471.JPG" width="220">
+<img class="drag" src="DSC_0228.JPG" width="220">
 
-<img class="drag" src="imp_0553.jpg" width="220" style="top:850px; left:620px;">
-<img class="drag" src="imp_0320.JPG" width="220" style="top:1100px; left:1000px;">
+<img class="drag" src="imp_0553.jpg" width="220">
+<img class="drag" src="imp_0320.JPG" width="220">
 
-<img class="drag" src="DSC_1015.JPG" width="220" style="top:1400px; left:250px;">
-<img class="drag" src="DSC_0992.JPG" width="220" style="top:1650px; left:700px;">
+<img class="drag" src="DSC_1015.JPG" width="220">
+<img class="drag" src="DSC_0992.JPG" width="220">
 
-<img class="drag" src="アートボード25.png" width="220" style="top:1900px; left:450px;">
+<img class="drag" src="アートボード25.png" width="220">
 
 </div>
+  
 <script>
 
 const images = document.querySelectorAll(".drag");
+
+  if(!localStorage.getItem("alreadythere_positions")){
+
+  images.forEach(img => {
+
+    img.style.left =
+      Math.floor(Math.random()*3200+100) + "px";
+
+    img.style.top =
+      Math.floor(Math.random()*2400+100) + "px";
+
+  });
+
+}
+
 const overlay = document.getElementById("overlay");
 
 const savedPositions = JSON.parse(
