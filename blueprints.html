@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>blueprints</title>
 <style>
-/* =========================
-   BASIC
-========================= */
+
 html,
 body{
   margin:0;
@@ -16,17 +14,11 @@ body{
   overflow:auto;
   font-family:Arial, Helvetica, sans-serif;
 }
-/* =========================
-   CANVAS
-========================= */
 #canvas{
   width:4000px;
   height:3000px;
   position:relative;
 }
-/* =========================
-   DRAG IMAGES
-========================= */
 .drag{
   position:absolute;
   cursor:grab;
@@ -38,9 +30,6 @@ body{
 .drag:active{
   cursor:grabbing;
 }
-/* =========================
-   MENU BUTTON
-========================= */
 #menu-button{
   position:fixed;
   top:20px;
@@ -51,9 +40,6 @@ body{
   cursor:pointer;
   user-select:none;
 }
-/* =========================
-   MENU
-========================= */
 #menu{
   position:fixed;
   top:0;
@@ -86,9 +72,6 @@ body{
 #menu a:hover{
   opacity:0.5;
 }
-/* =========================
-   CLOSE
-========================= */
 #menu-close{
   position:absolute;
   top:20px;
@@ -96,9 +79,6 @@ body{
   font-size:14px;
   cursor:pointer;
 }
-/* =========================
-   ZOOM OVERLAY
-========================= */
 #overlay{
   position:fixed;
   top:0;
@@ -112,9 +92,6 @@ body{
 #overlay.active{
   display:block;
 }
-/* =========================
-   ZOOMED IMAGE
-========================= */
 .zoomed{
   position:fixed !important;
   top:50% !important;
@@ -129,15 +106,12 @@ body{
 </style>
 </head>
 <body>
-<!-- =========================
-     MENU BUTTON
-========================= -->
+
+   
 <div id="menu-button">
   MENU
 </div>
-<!-- =========================
-     MENU
-========================= -->
+
 <div id="menu">
   <div id="menu-close">
     CLOSE
@@ -157,13 +131,10 @@ body{
 </li>
   </ul>
 </div>
-<!-- =========================
-     IMAGE OVERLAY
+
 ========================= -->
 <div id="overlay"></div>
-<!-- =========================
-     CANVAS
-========================= -->
+
 <div id="canvas">
 
 <img
@@ -174,35 +145,24 @@ alt=””
 
 </div>
 <script>
-/* =========================
-   ELEMENTS
-========================= */
+
+
 const menuButton = document.getElementById("menu-button");
 const menu = document.getElementById("menu");
 const menuClose = document.getElementById("menu-close");
 const overlay = document.getElementById("overlay");
 const images = document.querySelectorAll(".drag");
-/* =========================
-   MENU OPEN
-========================= */
 menuButton.addEventListener("click", () => {
   menu.classList.add("active");
 });
-/* =========================
-   MENU CLOSE
-========================= */
+
+====
 menuClose.addEventListener("click", () => {
   menu.classList.remove("active");
 });
-/* =========================
-   IMAGE POSITIONS
-========================= */
 const storageKey = "alreadythere_positions";
 const savedPositions =
   JSON.parse(localStorage.getItem(storageKey));
-/* =========================
-   INITIAL POSITION
-========================= */
 if(!savedPositions){
   images.forEach((img) => {
     img.style.left =
@@ -211,9 +171,6 @@ if(!savedPositions){
       Math.floor(Math.random() * 2400 + 100) + "px";
   });
 }
-/* =========================
-   RESTORE POSITION
-========================= */
 if(savedPositions){
   images.forEach((img,index) => {
     if(savedPositions[index]){
@@ -224,13 +181,8 @@ if(savedPositions){
     }
   });
 }
-/* =========================
-   Z-INDEX
-========================= */
 let highestZ = 1;
-/* =========================
-   DRAG SYSTEM
-========================= */
+
 images.forEach(img => {
   let isDragging = false;
   let offsetX = 0;
@@ -269,9 +221,6 @@ images.forEach(img => {
       JSON.stringify(positions)
     );
   }
-  /* =========================
-     POINTER DOWN
-  ========================= */
   img.addEventListener(
     "pointerdown",
     (e) => {
@@ -282,9 +231,6 @@ images.forEach(img => {
       );
     }
   );
-  /* =========================
-     POINTER MOVE
-  ========================= */
   document.addEventListener(
     "pointermove",
     (e) => {
@@ -294,18 +240,12 @@ images.forEach(img => {
       );
     }
   );
-  /* =========================
-     POINTER UP
-  ========================= */
   document.addEventListener(
     "pointerup",
     () => {
       stopDrag();
     }
   );
-  /* =========================
-     DOUBLE CLICK ZOOM
-  ========================= */
   img.addEventListener(
     "dblclick",
     () => {
@@ -320,9 +260,6 @@ images.forEach(img => {
     }
   );
 });
-/* =========================
-   CLOSE IMAGE
-========================= */
 overlay.addEventListener(
   "click",
   () => {
