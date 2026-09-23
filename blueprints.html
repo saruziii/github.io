@@ -1,146 +1,115 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>blueprints</title>
+
 <style>
+
 html,
 body {
   margin: 0;
   padding: 0;
   background: white;
   overflow: auto;
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+
 /* CANVAS */
+
 #canvas {
   width: 4000px;
   height: 3000px;
   position: relative;
 }
+
+
 /* IMAGES */
+
 .drag {
   position: absolute;
+
   cursor: grab;
+
   user-select: none;
+
   touch-action: none;
+
   -webkit-user-drag: none;
+
   -webkit-touch-callout: none;
 }
+
 .drag:active {
   cursor: grabbing;
 }
-/* MENU BUTTON */
-#menu-button {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 10001;
-  font-size: 14px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  user-select: none;
-}
-/* MENU */
-#menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: white;
-  display: none;
-  z-index: 10000;
-  box-sizing: border-box;
-  padding: 80px 30px;
-}
-#menu.active {
-  display: block;
-}
-/* MENU LIST */
-#menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-#menu li {
-  margin-bottom: 20px;
-}
-#menu a {
-  color: black;
-  text-decoration: none;
-  font-size: 24px;
-  letter-spacing: 1px;
-}
-#menu a:hover {
-  opacity: 0.5;
-}
-/* CLOSE */
-#menu-close {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 14px;
-  cursor: pointer;
-}
-/* IMAGE OVERLAY */
+
+
+/* OVERLAY */
+
 #overlay {
+
   position: fixed;
+
   top: 0;
   left: 0;
+
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.75);
+
+  background: rgba(0,0,0,0.75);
+
   display: none;
+
   z-index: 9998;
 }
+
 #overlay.active {
   display: block;
 }
+
+
 /* ZOOM */
+
 .zoomed {
+
   position: fixed !important;
+
   top: 50% !important;
+
   left: 50% !important;
+
   transform: translate(-50%, -50%);
+
   max-width: 80vw !important;
+
   max-height: 80vh !important;
+
   width: auto !important;
+
   height: auto !important;
+
   z-index: 9999 !important;
 }
+
 </style>
+
 </head>
+
+
 <body>
-<!-- MENU BUTTON -->
-<div id="menu-button">
-  MENU
-</div>
-<!-- MENU -->
-<div id="menu">
-  <div id="menu-close">
-    CLOSE
-  </div>
-  <ul>
-<li>
-  <a href="index.html">HOME</a>
-</li>
-<li>
-  <a href="blueprints.html">BLUEPRINTS</a>
-</li>
-<li>
-  <a href="about.html">ABOUT</a>
-</li>
-<li>
-  <a href="contact.html">CONTACT</a>
-</li>
-  </ul>
-</div>
-<!-- IMAGE OVERLAY -->
+
+
 <div id="overlay"></div>
-<!-- CANVAS -->
+
+
 <div id="canvas">
+
 
   <img
     class="drag"
@@ -149,154 +118,303 @@ body {
     alt=""
   >
 
+
 </div>
+
+
 <script>
-/* MENU */
-const menuButton =
-  document.getElementById("menu-button");
-const menu =
-  document.getElementById("menu");
-const menuClose =
-  document.getElementById("menu-close");
-menuButton.addEventListener("click", () => {
-  menu.classList.add("active");
-});
-menuClose.addEventListener("click", () => {
-  menu.classList.remove("active");
-});
-/* OVERLAY */
-const overlay =
-  document.getElementById("overlay");
-/* IMAGES */
+
+
+/* =========================
+   IMAGE
+========================= */
+
 const images =
   document.querySelectorAll(".drag");
-/* STORAGE */
+
+
+const overlay =
+  document.getElementById("overlay");
+
+
+/* =========================
+   STORAGE
+========================= */
+
 const storageKey =
-  "alreadythere_positions";
+  "alreadythere_blueprints_positions";
+
+
 const savedPositions =
   JSON.parse(
     localStorage.getItem(storageKey)
   );
-/* RANDOM POSITION */
+
+
+/* =========================
+   FIRST POSITION
+========================= */
+
 if (!savedPositions) {
+
   images.forEach((img) => {
+
     img.style.left =
       Math.floor(
         Math.random() * 3200 + 100
       ) + "px";
+
     img.style.top =
       Math.floor(
         Math.random() * 2400 + 100
       ) + "px";
+
   });
+
 }
-/* RESTORE POSITION */
+
+
+/* =========================
+   RESTORE POSITION
+========================= */
+
 if (savedPositions) {
+
   images.forEach((img, index) => {
+
     if (savedPositions[index]) {
+
       img.style.left =
         savedPositions[index].left;
+
       img.style.top =
         savedPositions[index].top;
+
     }
+
   });
+
 }
-/* Z-INDEX */
+
+
+/* =========================
+   Z INDEX
+========================= */
+
 let highestZ = 1;
-/* DRAG */
+
+
+/* =========================
+   DRAG
+========================= */
+
 images.forEach((img) => {
+
   let isDragging = false;
+
   let offsetX = 0;
+
   let offsetY = 0;
+
+
   function startDrag(x, y) {
+
     isDragging = true;
+
+
     offsetX =
       x - img.offsetLeft;
+
     offsetY =
       y - img.offsetTop;
+
+
     highestZ++;
+
     img.style.zIndex =
       highestZ;
+
   }
+
+
   function moveDrag(x, y) {
+
     if (!isDragging) return;
+
+
     img.style.left =
       (x - offsetX) + "px";
+
     img.style.top =
       (y - offsetY) + "px";
+
   }
+
+
   function stopDrag() {
+
     if (!isDragging) return;
+
+
     isDragging = false;
+
+
     const positions = [];
+
+
     document
       .querySelectorAll(".drag")
       .forEach((image) => {
+
         positions.push({
-          left: image.style.left,
-          top: image.style.top
+
+          left:
+            image.style.left,
+
+          top:
+            image.style.top
+
         });
+
       });
+
+
     localStorage.setItem(
+
       storageKey,
+
       JSON.stringify(positions)
+
     );
+
   }
-  /* POINTER DOWN */
+
+
+  /* TOUCH / MOUSE */
+
   img.addEventListener(
     "pointerdown",
     (e) => {
+
       e.preventDefault();
+
+
       startDrag(
+
         e.clientX,
+
         e.clientY
+
       );
+
     }
   );
-  /* POINTER MOVE */
+
+
   document.addEventListener(
+
     "pointermove",
+
     (e) => {
+
       moveDrag(
+
         e.clientX,
+
         e.clientY
+
       );
+
     }
+
   );
-  /* POINTER UP */
+
+
   document.addEventListener(
+
     "pointerup",
+
     () => {
+
       stopDrag();
+
     }
+
   );
-  /* DOUBLE CLICK */
+
+
+  /* =========================
+     DOUBLE CLICK / TAP
+  ========================= */
+
   img.addEventListener(
+
     "dblclick",
+
     () => {
-      img.classList.toggle("zoomed");
+
+      img.classList.toggle(
+        "zoomed"
+      );
+
+
       if (
-        img.classList.contains("zoomed")
+        img.classList.contains(
+          "zoomed"
+        )
       ) {
-        overlay.classList.add("active");
+
+        overlay.classList.add(
+          "active"
+        );
+
       } else {
-        overlay.classList.remove("active");
+
+        overlay.classList.remove(
+          "active"
+        );
+
       }
+
     }
+
   );
+
 });
-/* CLOSE ZOOM */
+
+
+/* =========================
+   CLOSE IMAGE
+========================= */
+
 overlay.addEventListener(
+
   "click",
+
   () => {
-    overlay.classList.remove("active");
+
+    overlay.classList.remove(
+      "active"
+    );
+
+
     document
       .querySelectorAll(".drag")
       .forEach((img) => {
-        img.classList.remove("zoomed");
+
+        img.classList.remove(
+          "zoomed"
+        );
+
       });
+
   }
+
 );
+
 </script>
+
+
 </body>
+
 </html>
