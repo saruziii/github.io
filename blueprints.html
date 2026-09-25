@@ -107,13 +107,12 @@ body {
 
   position: fixed;
 
-  top: 0;
-  left: 0;
+  inset: 0;
 
   width: 100vw;
   height: 100vh;
 
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.88);
 
   display: none;
 
@@ -130,34 +129,38 @@ body {
 
 
 /* =========================
-   IMAGE ZOOM
+   FULLSCREEN IMAGE
 ========================= */
 
-.zoomed {
+.fullscreen-image {
+
   position: fixed !important;
 
   top: 50% !important;
   left: 50% !important;
 
-  transform: translate(-50%, -50%) !important;
+  width: auto !important;
+  height: auto !important;
 
   max-width: 90vw !important;
   max-height: 90vh !important;
 
-  width: auto !important;
-  height: auto !important;
+  transform:
+    translate(-50%, -50%) !important;
 
   object-fit: contain;
 
-  z-index: 9999 !important;
+  z-index: 10000 !important;
 
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+  margin: 0 !important;
+
+  pointer-events: none;
 
   box-shadow:
-    0 20px 60px rgba(0,0,0,0.35);
+    0 20px 80px rgba(0,0,0,0.45);
+
 }
+
 
 /* =========================
    PC CURSOR
@@ -326,11 +329,14 @@ body {
 const viewport =
   document.getElementById("viewport");
 
+
 const canvas =
   document.getElementById("canvas");
 
+
 const images =
   document.querySelectorAll(".drag");
+
 
 const overlay =
   document.getElementById("overlay");
@@ -536,7 +542,6 @@ images.forEach((img) => {
 
       highestZ++;
 
-
       img.style.zIndex =
         highestZ;
 
@@ -624,37 +629,99 @@ images.forEach((img) => {
   );
 
 
-  /* =====================
-     DOUBLE TAP / CLICK
-  ===================== */
+  /* =========================
+     DOUBLE CLICK
+  ========================= */
 
   img.addEventListener(
     "dblclick",
     (e) => {
 
+      e.preventDefault();
+
       e.stopPropagation();
 
 
-      img.classList.toggle(
-        "zoomed"
-      );
-
+      /*
+        すでに表示中なら何もしない
+      */
 
       if (
-        img.classList.contains(
-          "zoomed"
+        document.querySelector(
+          ".fullscreen-image"
         )
       ) {
 
-        overlay.classList.add(
-          "active"
+        return;
+
+      }
+
+
+      /*
+        黒い背景を表示
+      */
+
+      overlay.classList.add(
+        "active"
+      );
+
+
+      /*
+        写真をコピー
+      */
+
+      const fullImage =
+        img.cloneNode(true);
+
+
+      /*
+        Canvas用のclassを外す
+      */
+
+      fullImage.classList.remove(
+        "drag"
+      );
+
+
+      /*
+        fullscreen用class
+      */
+
+      fullImage.classList.add(
+        "fullscreen-image"
+      );
+
+
+      /*
+        Canvasの外、
+        body直下に追加
+      */
+
+      document.body.appendChild(
+        fullImage
+      );
+
+
+      /*
+        画像読み込み後に中央配置
+      */
+
+      if (fullImage.complete) {
+
+        centerFullImage(
+          fullImage
         );
 
       } else {
 
-        overlay.classList.remove(
-          "active"
-        );
+        fullImage.onload =
+          () => {
+
+            centerFullImage(
+              fullImage
+            );
+
+          };
 
       }
 
@@ -662,6 +729,39 @@ images.forEach((img) => {
   );
 
 });
+
+
+/* =========================
+   CENTER FULL IMAGE
+========================= */
+
+function centerFullImage(image) {
+
+  image.style.position =
+    "fixed";
+
+  image.style.top =
+    "50%";
+
+  image.style.left =
+    "50%";
+
+  image.style.width =
+    "auto";
+
+  image.style.height =
+    "auto";
+
+  image.style.maxWidth =
+    "90vw";
+
+  image.style.maxHeight =
+    "90vh";
+
+  image.style.transform =
+    "translate(-50%, -50%)";
+
+}
 
 
 /* =========================
@@ -711,7 +811,7 @@ viewport.addEventListener(
 
     /*
       写真を触った場合は
-      写真側のドラッグを使う
+      写真側のドラッグを優先
     */
 
     if (
@@ -737,9 +837,9 @@ viewport.addEventListener(
     );
 
 
-    /* =====================
-       1本指
-    ===================== */
+    /*
+      1本指 PAN
+    */
 
     if (
       pointers.size === 1
@@ -766,9 +866,9 @@ viewport.addEventListener(
     }
 
 
-    /* =====================
-       2本指
-    ===================== */
+    /*
+      2本指 PINCH
+    */
 
     if (
       pointers.size === 2
@@ -849,9 +949,9 @@ viewport.addEventListener(
     );
 
 
-    /* =====================
-       1本指 PAN
-    ===================== */
+    /*
+      1本指 PAN
+    */
 
     if (
       pointers.size === 1 &&
@@ -882,9 +982,9 @@ viewport.addEventListener(
     }
 
 
-    /* =====================
-       2本指 PINCH
-    ===================== */
+    /*
+      2本指 PINCH
+    */
 
     if (
       pointers.size === 2
@@ -928,7 +1028,7 @@ viewport.addEventListener(
 
       /*
         指の中心を基準に
-        ズームする
+        ズーム
       */
 
       const worldX =
@@ -1135,7 +1235,7 @@ viewport.addEventListener(
 
 
 /* =========================
-   CLOSE IMAGE
+   CLOSE FULLSCREEN IMAGE
 ========================= */
 
 overlay.addEventListener(
@@ -1147,15 +1247,17 @@ overlay.addEventListener(
     );
 
 
-    images.forEach(
-      (img) => {
+    const fullImage =
+      document.querySelector(
+        ".fullscreen-image"
+      );
 
-        img.classList.remove(
-          "zoomed"
-        );
 
-      }
-    );
+    if (fullImage) {
+
+      fullImage.remove();
+
+    }
 
   }
 );
