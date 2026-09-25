@@ -1,22 +1,702 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>blueprints</title>
+
+<style>
+
+html,
+body {
+
+  margin: 0;
+  padding: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: white;
+
+  overflow: hidden;
+
+}
+
+
 /* =========================
-   CANVAS PAN + PINCH
+   VIEWPORT
 ========================= */
 
-let pointers = new Map();
+#viewport {
 
-let isPanning = false;
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+
+  touch-action: none;
+
+}
+
+
+/* =========================
+   CANVAS
+========================= */
+
+#canvas {
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 4000px;
+  height: 3000px;
+
+  transform-origin: 0 0;
+
+}
+
+
+/* =========================
+   IMAGES
+========================= */
+
+.drag {
+
+  position: absolute;
+
+  cursor: grab;
+
+  user-select: none;
+
+  -webkit-user-select: none;
+
+  -webkit-user-drag: none;
+
+  -webkit-touch-callout: none;
+
+  touch-action: none;
+
+}
+
+
+.drag:active {
+
+  cursor: grabbing;
+
+}
+
+
+/* =========================
+   OVERLAY
+========================= */
+
+#overlay {
+
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(0,0,0,0.75);
+
+  display: none;
+
+  z-index: 9998;
+
+}
+
+
+#overlay.active {
+
+  display: block;
+
+}
+
+
+/* =========================
+   IMAGE ZOOM
+========================= */
+
+.zoomed {
+
+  position: fixed !important;
+
+  top: 50% !important;
+
+  left: 50% !important;
+
+  transform:
+    translate(-50%, -50%) !important;
+
+  max-width: 80vw !important;
+
+  max-height: 80vh !important;
+
+  width: auto !important;
+
+  height: auto !important;
+
+  z-index: 9999 !important;
+
+}
+
+
+/* =========================
+   PC CURSOR
+========================= */
+
+#viewport {
+
+  cursor: grab;
+
+}
+
+
+#viewport:active {
+
+  cursor: grabbing;
+
+}
+
+
+.drag {
+
+  cursor: grab;
+
+}
+
+
+.drag:active {
+
+  cursor: grabbing;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div id="viewport">
+
+
+  <div id="canvas">
+
+
+    <img
+      class="drag"
+      src="DSC_11.jpeg"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0367.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_1141.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0664.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0652.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0198.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="案内板.jpg"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="2.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0480.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_11.JPG"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_1092"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_1"
+      width="180"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_10"
+      width="180"
+      alt=""
+    >
+
+
+  </div>
+
+</div>
+
+
+<div id="overlay"></div>
+
+
+<script>
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const viewport =
+  document.getElementById("viewport");
+
+const canvas =
+  document.getElementById("canvas");
+
+const images =
+  document.querySelectorAll(".drag");
+
+const overlay =
+  document.getElementById("overlay");
+
+
+/* =========================
+   STORAGE
+========================= */
+
+const storageKey =
+  "alreadythere_blueprints_positions";
+
+
+const savedPositions =
+  JSON.parse(
+    localStorage.getItem(storageKey)
+  );
+
+
+/* =========================
+   INITIAL POSITION
+========================= */
+
+if (!savedPositions) {
+
+  images.forEach((img) => {
+
+    img.style.left =
+      Math.floor(
+        Math.random() * 3200 + 100
+      ) + "px";
+
+
+    img.style.top =
+      Math.floor(
+        Math.random() * 2400 + 100
+      ) + "px";
+
+  });
+
+}
+
+
+/* =========================
+   RESTORE POSITION
+========================= */
+
+if (savedPositions) {
+
+  images.forEach(
+    (img, index) => {
+
+      if (
+        savedPositions[index]
+      ) {
+
+        img.style.left =
+          savedPositions[index].left;
+
+        img.style.top =
+          savedPositions[index].top;
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================
+   CANVAS TRANSFORM
+========================= */
+
+let scale = 1;
+
+let panX = 0;
+
+let panY = 0;
+
+
+function updateCanvas() {
+
+  canvas.style.transform =
+    `
+      translate(
+        ${panX}px,
+        ${panY}px
+      )
+      scale(${scale})
+    `;
+
+}
+
+
+/* =========================
+   Z INDEX
+========================= */
+
+let highestZ = 1;
+
+
+/* =========================
+   SAVE POSITIONS
+========================= */
+
+function savePositions() {
+
+  const positions = [];
+
+
+  document
+    .querySelectorAll(".drag")
+    .forEach((image) => {
+
+      positions.push({
+
+        left:
+          image.style.left,
+
+        top:
+          image.style.top
+
+      });
+
+    });
+
+
+  localStorage.setItem(
+
+    storageKey,
+
+    JSON.stringify(positions)
+
+  );
+
+}
+
+
+/* =========================
+   IMAGE DRAG
+========================= */
+
+images.forEach((img) => {
+
+  let dragging = false;
+
+  let pointerId = null;
+
+  let offsetX = 0;
+
+  let offsetY = 0;
+
+
+  img.addEventListener(
+    "pointerdown",
+    (e) => {
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+
+      pointerId =
+        e.pointerId;
+
+
+      img.setPointerCapture(
+        pointerId
+      );
+
+
+      dragging = true;
+
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      const x =
+        (
+          e.clientX -
+          rect.left
+        ) / scale;
+
+
+      const y =
+        (
+          e.clientY -
+          rect.top
+        ) / scale;
+
+
+      offsetX =
+        x -
+        img.offsetLeft;
+
+
+      offsetY =
+        y -
+        img.offsetTop;
+
+
+      highestZ++;
+
+
+      img.style.zIndex =
+        highestZ;
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointermove",
+    (e) => {
+
+      if (!dragging)
+        return;
+
+
+      if (
+        e.pointerId !==
+        pointerId
+      )
+        return;
+
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      const x =
+        (
+          e.clientX -
+          rect.left
+        ) / scale;
+
+
+      const y =
+        (
+          e.clientY -
+          rect.top
+        ) / scale;
+
+
+      img.style.left =
+        (
+          x -
+          offsetX
+        ) + "px";
+
+
+      img.style.top =
+        (
+          y -
+          offsetY
+        ) + "px";
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointerup",
+    (e) => {
+
+      if (
+        e.pointerId !==
+        pointerId
+      )
+        return;
+
+
+      dragging = false;
+
+
+      savePositions();
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointercancel",
+    () => {
+
+      dragging = false;
+
+    }
+  );
+
+
+  /* =====================
+     DOUBLE TAP / CLICK
+  ===================== */
+
+  img.addEventListener(
+    "dblclick",
+    (e) => {
+
+      e.stopPropagation();
+
+
+      img.classList.toggle(
+        "zoomed"
+      );
+
+
+      if (
+        img.classList.contains(
+          "zoomed"
+        )
+      ) {
+
+        overlay.classList.add(
+          "active"
+        );
+
+      } else {
+
+        overlay.classList.remove(
+          "active"
+        );
+
+      }
+
+    }
+  );
+
+});
+
+
+/* =========================
+   PAN + PINCH
+========================= */
+
+let pointers =
+  new Map();
+
+
+let isPanning =
+  false;
+
 
 let panStartX = 0;
+
 let panStartY = 0;
 
 let panStartPanX = 0;
+
 let panStartPanY = 0;
 
-let pinchStartDistance = 0;
-let pinchStartScale = 1;
 
-let pinchCenterX = 0;
-let pinchCenterY = 0;
+let pinchStartDistance =
+  0;
+
+
+let pinchStartScale =
+  1;
+
+
+let pinchCenterX =
+  0;
+
+
+let pinchCenterY =
+  0;
 
 
 /* =========================
@@ -29,11 +709,13 @@ viewport.addEventListener(
 
     /*
       写真を触った場合は
-      写真のドラッグを優先
+      写真側のドラッグを使う
     */
 
     if (
-      e.target.classList.contains("drag")
+      e.target.classList.contains(
+        "drag"
+      )
     ) {
 
       return;
@@ -42,30 +724,39 @@ viewport.addEventListener(
 
 
     pointers.set(
+
       e.pointerId,
+
       {
         x: e.clientX,
         y: e.clientY
       }
+
     );
 
 
     /* =====================
-       1本指 PAN
+       1本指
     ===================== */
 
-    if (pointers.size === 1) {
+    if (
+      pointers.size === 1
+    ) {
 
       isPanning = true;
+
 
       panStartX =
         e.clientX;
 
+
       panStartY =
         e.clientY;
 
+
       panStartPanX =
         panX;
+
 
       panStartPanY =
         panY;
@@ -74,24 +765,30 @@ viewport.addEventListener(
 
 
     /* =====================
-       2本指 PINCH
+       2本指
     ===================== */
 
-    if (pointers.size === 2) {
+    if (
+      pointers.size === 2
+    ) {
 
       isPanning = false;
 
 
       const pts =
-        [...pointers.values()];
+        [
+          ...pointers.values()
+        ];
 
 
       pinchStartDistance =
         Math.hypot(
 
-          pts[0].x - pts[1].x,
+          pts[0].x -
+          pts[1].x,
 
-          pts[0].y - pts[1].y
+          pts[0].y -
+          pts[1].y
 
         );
 
@@ -101,11 +798,17 @@ viewport.addEventListener(
 
 
       pinchCenterX =
-        (pts[0].x + pts[1].x) / 2;
+        (
+          pts[0].x +
+          pts[1].x
+        ) / 2;
 
 
       pinchCenterY =
-        (pts[0].y + pts[1].y) / 2;
+        (
+          pts[0].y +
+          pts[1].y
+        ) / 2;
 
     }
 
@@ -122,7 +825,9 @@ viewport.addEventListener(
   (e) => {
 
     if (
-      !pointers.has(e.pointerId)
+      !pointers.has(
+        e.pointerId
+      )
     ) {
 
       return;
@@ -153,14 +858,22 @@ viewport.addEventListener(
 
       panX =
         panStartPanX +
-        (e.clientX - panStartX);
+        (
+          e.clientX -
+          panStartX
+        );
+
 
       panY =
         panStartPanY +
-        (e.clientY - panStartY);
+        (
+          e.clientY -
+          panStartY
+        );
 
 
       updateCanvas();
+
 
       return;
 
@@ -176,15 +889,19 @@ viewport.addEventListener(
     ) {
 
       const pts =
-        [...pointers.values()];
+        [
+          ...pointers.values()
+        ];
 
 
       const distance =
         Math.hypot(
 
-          pts[0].x - pts[1].x,
+          pts[0].x -
+          pts[1].x,
 
-          pts[0].y - pts[1].y
+          pts[0].y -
+          pts[1].y
 
         );
 
@@ -200,22 +917,30 @@ viewport.addEventListener(
       newScale =
         Math.max(
           0.3,
-          Math.min(4, newScale)
+          Math.min(
+            4,
+            newScale
+          )
         );
 
 
       /*
-        ピンチ中心を基準に
-        拡大縮小
+        指の中心を基準に
+        ズームする
       */
 
       const worldX =
-        (pinchCenterX - panX)
-        / scale;
+        (
+          pinchCenterX -
+          panX
+        ) / scale;
+
 
       const worldY =
-        (pinchCenterY - panY)
-        / scale;
+        (
+          pinchCenterY -
+          panY
+        ) / scale;
 
 
       scale =
@@ -224,11 +949,14 @@ viewport.addEventListener(
 
       panX =
         pinchCenterX -
-        worldX * scale;
+        worldX *
+        scale;
+
 
       panY =
         pinchCenterY -
-        worldY * scale;
+        worldY *
+        scale;
 
 
       updateCanvas();
@@ -262,8 +990,8 @@ viewport.addEventListener(
 
 
     /*
-      2本指から1本指に戻った時
-      新しいPANを開始
+      2本指から
+      1本指に戻った場合
     */
 
     if (
@@ -271,7 +999,9 @@ viewport.addEventListener(
     ) {
 
       const remaining =
-        [...pointers.values()][0];
+        [
+          ...pointers.values()
+        ][0];
 
 
       isPanning = true;
@@ -280,11 +1010,14 @@ viewport.addEventListener(
       panStartX =
         remaining.x;
 
+
       panStartY =
         remaining.y;
 
+
       panStartPanX =
         panX;
+
 
       panStartPanY =
         panY;
@@ -318,3 +1051,123 @@ viewport.addEventListener(
 
   }
 );
+
+
+/* =========================
+   PC WHEEL ZOOM
+========================= */
+
+viewport.addEventListener(
+  "wheel",
+  (e) => {
+
+    e.preventDefault();
+
+
+    const rect =
+      viewport.getBoundingClientRect();
+
+
+    const mouseX =
+      e.clientX -
+      rect.left;
+
+
+    const mouseY =
+      e.clientY -
+      rect.top;
+
+
+    const worldX =
+      (
+        mouseX -
+        panX
+      ) / scale;
+
+
+    const worldY =
+      (
+        mouseY -
+        panY
+      ) / scale;
+
+
+    const zoom =
+      e.deltaY < 0
+        ? 1.1
+        : 0.9;
+
+
+    scale *= zoom;
+
+
+    scale =
+      Math.max(
+        0.3,
+        Math.min(
+          4,
+          scale
+        )
+      );
+
+
+    panX =
+      mouseX -
+      worldX *
+      scale;
+
+
+    panY =
+      mouseY -
+      worldY *
+      scale;
+
+
+    updateCanvas();
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+/* =========================
+   CLOSE IMAGE
+========================= */
+
+overlay.addEventListener(
+  "click",
+  () => {
+
+    overlay.classList.remove(
+      "active"
+    );
+
+
+    images.forEach(
+      (img) => {
+
+        img.classList.remove(
+          "zoomed"
+        );
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================
+   START
+========================= */
+
+updateCanvas();
+
+</script>
+
+
+</body>
+
+</html>
