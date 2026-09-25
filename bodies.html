@@ -143,29 +143,24 @@ body{
    IMAGE ZOOM
 ========================= */
 
-.zoomed{
+.zoomed {
+  position: fixed !important;
 
-  position:fixed !important;
+  top: 50% !important;
+  left: 50% !important;
 
-  top:50% !important;
+  transform: translate(-50%, -50%) !important;
 
-  left:50% !important;
+  width: auto !important;
+  height: auto !important;
 
-  transform:
-    translate(-50%, -50%) !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
 
-  max-width:80vw !important;
+  object-fit: contain;
 
-  max-height:80vh !important;
-
-  width:auto !important;
-
-  height:auto !important;
-
-  z-index:9999 !important;
-
+  z-index: 9999 !important;
 }
-
 
 </style>
 
