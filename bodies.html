@@ -1,242 +1,1139 @@
 <!DOCTYPE html>
 
 <html lang="ja">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <title>Photo</title>
+
 
 <style>
 
+
+html,
 body{
+
   margin:0;
+
+  padding:0;
+
+  width:100%;
+
+  height:100%;
+
   background:white;
-  overflow:auto;
+
+  overflow:hidden;
+
 }
 
-#canvas{
-  width:4000px;
-  height:3000px;
-  position:relative;
-}
 
-.drag{
-  position:absolute;
-  cursor:grab;
-  user-select:none;
+/* =========================
+   VIEWPORT
+========================= */
+
+#viewport{
+
+  position:fixed;
+
+  top:0;
+
+  left:0;
+
+  width:100vw;
+
+  height:100vh;
+
+  overflow:hidden;
 
   touch-action:none;
+
+}
+
+
+/* =========================
+   CANVAS
+========================= */
+
+#canvas{
+
+  width:4000px;
+
+  height:3000px;
+
+  position:absolute;
+
+  left:0;
+
+  top:0;
+
+  transform-origin:0 0;
+
+}
+
+
+/* =========================
+   IMAGES
+========================= */
+
+.drag{
+
+  position:absolute;
+
+  cursor:grab;
+
+  user-select:none;
+
+  -webkit-user-select:none;
+
   -webkit-user-drag:none;
+
   -webkit-touch-callout:none;
+
+  touch-action:none;
+
 }
 
-.zoomed{
-position:fixed !important;
-top:50% !important;
-left:50% !important;
 
-transform:translate(-50%, -50%);
+.drag:active{
 
-max-width:80vw !important;
-max-height:80vh !important;
+  cursor:grabbing;
 
-width:auto !important;
-height:auto !important;
-
-z-index:9999 !important;
 }
 
+
+/* =========================
+   OVERLAY
+========================= */
 
 #overlay{
+
   position:fixed;
+
   top:0;
+
   left:0;
+
   width:100vw;
+
   height:100vh;
+
   background:rgba(0,0,0,0.75);
+
   display:none;
+
   z-index:9998;
+
 }
 
+
 #overlay.active{
+
   display:block;
+
 }
+
+
+/* =========================
+   IMAGE ZOOM
+========================= */
+
+.zoomed{
+
+  position:fixed !important;
+
+  top:50% !important;
+
+  left:50% !important;
+
+  transform:
+    translate(-50%, -50%) !important;
+
+  max-width:80vw !important;
+
+  max-height:80vh !important;
+
+  width:auto !important;
+
+  height:auto !important;
+
+  z-index:9999 !important;
+
+}
+
 
 </style>
 
 </head>
 
+
 <body>
+
+
+<div id="viewport">
+
+
+  <div id="canvas">
+
+
+    <img
+      class="drag"
+      src="DSC_0398.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0582.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0471.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0228.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="imp_0553.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="imp_0320.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_1015.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0992.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="アートボード 25.png"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0439.JPG"
+      width="220"
+      alt=""
+    >
+
+
+    <img
+      class="drag"
+      src="DSC_0237.JPG"
+      width="220"
+      alt=""
+    >
+
+
+  </div>
+
+</div>
+
 
 <div id="overlay"></div>
 
-<div id="canvas">
 
-<img class="drag" src="DSC_0398.JPG" width="220">
-<img class="drag" src="DSC_0582.JPG" width="220">
-<img class="drag" src="DSC_0471.JPG" width="220">
-<img class="drag" src="DSC_0228.JPG" width="220">
-
-<img class="drag" src="imp_0553.JPG" width="220">
-<img class="drag" src="imp_0320.JPG" width="220">
-
-<img class="drag" src="DSC_1015.JPG" width="220">
-<img class="drag" src="DSC_0992.JPG" width="220">
-
-<img class="drag" src="アートボード 25.png" width="220">
-
-<img class="drag" src="DSC_0439.JPG"width="220">
-
-
-<img class="drag" src="DSC_0237.JPG"width="220">
-
-</div>
-  
 <script>
 
-const images = document.querySelectorAll(".drag");
 
-  if(!localStorage.getItem("alreadythere_positions")){
+/* =========================
+   ELEMENTS
+========================= */
 
-  images.forEach(img => {
+const viewport =
+  document.getElementById("viewport");
+
+
+const canvas =
+  document.getElementById("canvas");
+
+
+const images =
+  document.querySelectorAll(".drag");
+
+
+const overlay =
+  document.getElementById("overlay");
+
+
+/* =========================
+   STORAGE
+========================= */
+
+const storageKey =
+  "alreadythere_positions";
+
+
+const savedPositions =
+  JSON.parse(
+    localStorage.getItem(storageKey)
+  );
+
+
+/* =========================
+   INITIAL POSITIONS
+========================= */
+
+if(!savedPositions){
+
+  images.forEach((img)=>{
 
     img.style.left =
-      Math.floor(Math.random()*3200+100) + "px";
+      Math.floor(
+        Math.random()*3200+100
+      ) + "px";
+
 
     img.style.top =
-      Math.floor(Math.random()*2400+100) + "px";
+      Math.floor(
+        Math.random()*2400+100
+      ) + "px";
 
   });
 
 }
 
-const overlay = document.getElementById("overlay");
 
-const savedPositions = JSON.parse(
-  localStorage.getItem("alreadythere_positions")
-);
+/* =========================
+   RESTORE POSITIONS
+========================= */
 
 if(savedPositions){
 
-  images.forEach((img,index) => {
+  images.forEach(
+    (img,index)=>{
 
-    if(savedPositions[index]){
+      if(savedPositions[index]){
 
-      img.style.left = savedPositions[index].left;
-      img.style.top = savedPositions[index].top;
+        img.style.left =
+          savedPositions[index].left;
+
+
+        img.style.top =
+          savedPositions[index].top;
+
+      }
 
     }
-
-  });
+  );
 
 }
 
+
+/* =========================
+   CANVAS VIEW
+========================= */
+
+let scale = 1;
+
+let panX = 0;
+
+let panY = 0;
+
+
+function updateCanvas(){
+
+  canvas.style.transform =
+    `
+      translate(
+        ${panX}px,
+        ${panY}px
+      )
+      scale(${scale})
+    `;
+
+}
+
+
+/* =========================
+   Z INDEX
+========================= */
+
 let highestZ = 1;
 
-images.forEach(img => {
 
-  let isDragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
+/* =========================
+   SAVE POSITIONS
+========================= */
 
-  function startDrag(x,y){
+function savePositions(){
 
-    isDragging = true;
+  const positions = [];
 
-    offsetX = x - img.offsetLeft;
-    offsetY = y - img.offsetTop;
 
-    highestZ++;
-    img.style.zIndex = highestZ;
-
-  }
-
-  function moveDrag(x,y){
-
-    if(!isDragging) return;
-
-    img.style.left = (x - offsetX) + "px";
-    img.style.top = (y - offsetY) + "px";
-
-  }
-
-  function stopDrag(){
-
-    if(!isDragging) return;
-
-    isDragging = false;
-
-    const positions = [];
-
-    document.querySelectorAll(".drag").forEach(img => {
+  document
+    .querySelectorAll(".drag")
+    .forEach((img)=>{
 
       positions.push({
-        left: img.style.left,
-        top: img.style.top
+
+        left:
+          img.style.left,
+
+        top:
+          img.style.top
+
       });
 
     });
 
-    localStorage.setItem(
-      "alreadythere_positions",
-      JSON.stringify(positions)
+
+  localStorage.setItem(
+
+    storageKey,
+
+    JSON.stringify(positions)
+
+  );
+
+}
+
+
+/* =========================
+   IMAGE DRAG
+========================= */
+
+images.forEach((img)=>{
+
+  let isDragging = false;
+
+  let pointerId = null;
+
+  let offsetX = 0;
+
+  let offsetY = 0;
+
+
+  img.addEventListener(
+    "pointerdown",
+    (e)=>{
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+
+      pointerId =
+        e.pointerId;
+
+
+      img.setPointerCapture(
+        pointerId
+      );
+
+
+      isDragging = true;
+
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      const x =
+        (
+          e.clientX -
+          rect.left
+        ) / scale;
+
+
+      const y =
+        (
+          e.clientY -
+          rect.top
+        ) / scale;
+
+
+      offsetX =
+        x -
+        img.offsetLeft;
+
+
+      offsetY =
+        y -
+        img.offsetTop;
+
+
+      highestZ++;
+
+
+      img.style.zIndex =
+        highestZ;
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointermove",
+    (e)=>{
+
+      if(!isDragging)
+        return;
+
+
+      if(
+        e.pointerId !==
+        pointerId
+      )
+        return;
+
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      const x =
+        (
+          e.clientX -
+          rect.left
+        ) / scale;
+
+
+      const y =
+        (
+          e.clientY -
+          rect.top
+        ) / scale;
+
+
+      img.style.left =
+        (
+          x -
+          offsetX
+        ) + "px";
+
+
+      img.style.top =
+        (
+          y -
+          offsetY
+        ) + "px";
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointerup",
+    (e)=>{
+
+      if(
+        e.pointerId !==
+        pointerId
+      )
+        return;
+
+
+      isDragging = false;
+
+
+      savePositions();
+
+    }
+  );
+
+
+  img.addEventListener(
+    "pointercancel",
+    ()=>{
+
+      isDragging = false;
+
+    }
+  );
+
+
+  /* =====================
+     DOUBLE TAP / CLICK
+  ===================== */
+
+  img.addEventListener(
+    "dblclick",
+    (e)=>{
+
+      e.stopPropagation();
+
+
+      img.classList.toggle(
+        "zoomed"
+      );
+
+
+      if(
+        img.classList.contains(
+          "zoomed"
+        )
+      ){
+
+        overlay.classList.add(
+          "active"
+        );
+
+      }else{
+
+        overlay.classList.remove(
+          "active"
+        );
+
+      }
+
+    }
+  );
+
+});
+
+
+/* =========================
+   PAN + PINCH
+========================= */
+
+let pointers =
+  new Map();
+
+
+let isPanning =
+  false;
+
+
+let panStartX = 0;
+
+let panStartY = 0;
+
+let panStartPanX = 0;
+
+let panStartPanY = 0;
+
+
+let pinchStartDistance =
+  0;
+
+
+let pinchStartScale =
+  1;
+
+
+let pinchCenterX =
+  0;
+
+
+let pinchCenterY =
+  0;
+
+
+/* =========================
+   POINTER DOWN
+========================= */
+
+viewport.addEventListener(
+  "pointerdown",
+  (e)=>{
+
+    /*
+      写真を触った場合は
+      写真のドラッグを優先
+    */
+
+    if(
+      e.target.classList.contains(
+        "drag"
+      )
+    ){
+
+      return;
+
+    }
+
+
+    pointers.set(
+
+      e.pointerId,
+
+      {
+        x:e.clientX,
+        y:e.clientY
+      }
+
     );
 
-  }
 
-  img.addEventListener("pointerdown", (e) => {
+    /* =====================
+       1本指 PAN
+    ===================== */
+
+    if(
+      pointers.size === 1
+    ){
+
+      isPanning = true;
+
+
+      panStartX =
+        e.clientX;
+
+
+      panStartY =
+        e.clientY;
+
+
+      panStartPanX =
+        panX;
+
+
+      panStartPanY =
+        panY;
+
+    }
+
+
+    /* =====================
+       2本指 PINCH
+    ===================== */
+
+    if(
+      pointers.size === 2
+    ){
+
+      isPanning = false;
+
+
+      const pts =
+        [
+          ...pointers.values()
+        ];
+
+
+      pinchStartDistance =
+        Math.hypot(
+
+          pts[0].x -
+          pts[1].x,
+
+          pts[0].y -
+          pts[1].y
+
+        );
+
+
+      pinchStartScale =
+        scale;
+
+
+      pinchCenterX =
+        (
+          pts[0].x +
+          pts[1].x
+        ) / 2;
+
+
+      pinchCenterY =
+        (
+          pts[0].y +
+          pts[1].y
+        ) / 2;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   POINTER MOVE
+========================= */
+
+viewport.addEventListener(
+  "pointermove",
+  (e)=>{
+
+    if(
+      !pointers.has(
+        e.pointerId
+      )
+    ){
+
+      return;
+
+    }
+
+
+    pointers.set(
+
+      e.pointerId,
+
+      {
+        x:e.clientX,
+        y:e.clientY
+      }
+
+    );
+
+
+    /* =====================
+       1本指 PAN
+    ===================== */
+
+    if(
+      pointers.size === 1 &&
+      isPanning
+    ){
+
+      panX =
+        panStartPanX +
+        (
+          e.clientX -
+          panStartX
+        );
+
+
+      panY =
+        panStartPanY +
+        (
+          e.clientY -
+          panStartY
+        );
+
+
+      updateCanvas();
+
+
+      return;
+
+    }
+
+
+    /* =====================
+       2本指 PINCH
+    ===================== */
+
+    if(
+      pointers.size === 2
+    ){
+
+      const pts =
+        [
+          ...pointers.values()
+        ];
+
+
+      const distance =
+        Math.hypot(
+
+          pts[0].x -
+          pts[1].x,
+
+          pts[0].y -
+          pts[1].y
+
+        );
+
+
+      let newScale =
+        pinchStartScale *
+        (
+          distance /
+          pinchStartDistance
+        );
+
+
+      newScale =
+        Math.max(
+          0.3,
+          Math.min(
+            4,
+            newScale
+          )
+        );
+
+
+      /*
+        指の中心を基準に
+        ズーム
+      */
+
+      const worldX =
+        (
+          pinchCenterX -
+          panX
+        ) / scale;
+
+
+      const worldY =
+        (
+          pinchCenterY -
+          panY
+        ) / scale;
+
+
+      scale =
+        newScale;
+
+
+      panX =
+        pinchCenterX -
+        worldX *
+        scale;
+
+
+      panY =
+        pinchCenterY -
+        worldY *
+        scale;
+
+
+      updateCanvas();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   POINTER UP
+========================= */
+
+viewport.addEventListener(
+  "pointerup",
+  (e)=>{
+
+    pointers.delete(
+      e.pointerId
+    );
+
+
+    if(
+      pointers.size === 0
+    ){
+
+      isPanning = false;
+
+    }
+
+
+    /*
+      2本指から1本指へ
+    */
+
+    if(
+      pointers.size === 1
+    ){
+
+      const remaining =
+        [
+          ...pointers.values()
+        ][0];
+
+
+      isPanning = true;
+
+
+      panStartX =
+        remaining.x;
+
+
+      panStartY =
+        remaining.y;
+
+
+      panStartPanX =
+        panX;
+
+
+      panStartPanY =
+        panY;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   POINTER CANCEL
+========================= */
+
+viewport.addEventListener(
+  "pointercancel",
+  (e)=>{
+
+    pointers.delete(
+      e.pointerId
+    );
+
+
+    if(
+      pointers.size === 0
+    ){
+
+      isPanning = false;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   PC WHEEL ZOOM
+========================= */
+
+viewport.addEventListener(
+  "wheel",
+  (e)=>{
 
     e.preventDefault();
 
-    startDrag(
-      e.clientX,
-      e.clientY
+
+    const rect =
+      viewport.getBoundingClientRect();
+
+
+    const mouseX =
+      e.clientX -
+      rect.left;
+
+
+    const mouseY =
+      e.clientY -
+      rect.top;
+
+
+    const worldX =
+      (
+        mouseX -
+        panX
+      ) / scale;
+
+
+    const worldY =
+      (
+        mouseY -
+        panY
+      ) / scale;
+
+
+    const zoom =
+      e.deltaY < 0
+        ? 1.1
+        : 0.9;
+
+
+    scale *= zoom;
+
+
+    scale =
+      Math.max(
+        0.3,
+        Math.min(
+          4,
+          scale
+        )
+      );
+
+
+    panX =
+      mouseX -
+      worldX *
+      scale;
+
+
+    panY =
+      mouseY -
+      worldY *
+      scale;
+
+
+    updateCanvas();
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+/* =========================
+   CLOSE IMAGE
+========================= */
+
+overlay.addEventListener(
+  "click",
+  ()=>{
+
+    overlay.classList.remove(
+      "active"
     );
 
-  });
 
-  document.addEventListener("pointermove", (e) => {
+    images.forEach(
+      (img)=>{
 
-    moveDrag(
-      e.clientX,
-      e.clientY
+        img.classList.remove(
+          "zoomed"
+        );
+
+      }
     );
 
-  });
+  }
+);
 
-  document.addEventListener("pointerup", () => {
 
-    stopDrag();
+/* =========================
+   START
+========================= */
 
-  });
+updateCanvas();
 
-  img.addEventListener("dblclick", () => {
-
-    img.classList.toggle("zoomed");
-
-    if(img.classList.contains("zoomed")){
-      overlay.classList.add("active");
-    } else {
-      overlay.classList.remove("active");
-    }
-
-  });
-
-});
-
-overlay.addEventListener("click", () => {
-
-  overlay.classList.remove("active");
-
-  document.querySelectorAll(".drag").forEach(img => {
-    img.classList.remove("zoomed");
-  });
-
-});
 
 </script>
 
-</body>
-</html>
 
+</body>
+
+</html>
 
