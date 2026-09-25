@@ -151,15 +151,22 @@ body{
 
   transform: translate(-50%, -50%) !important;
 
-  width: auto !important;
-  height: auto !important;
-
   max-width: 90vw !important;
   max-height: 90vh !important;
+
+  width: auto !important;
+  height: auto !important;
 
   object-fit: contain;
 
   z-index: 9999 !important;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.35);
 }
 
 </style>
