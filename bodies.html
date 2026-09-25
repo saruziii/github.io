@@ -684,7 +684,37 @@ img.addEventListener(
   }
 );
 
+/* =========================
+   CENTER FULL IMAGE
+========================= */
 
+function centerFullImage(image) {
+
+  image.style.position =
+    "fixed";
+
+  image.style.top =
+    "50%";
+
+  image.style.left =
+    "50%";
+
+  image.style.width =
+    "auto";
+
+  image.style.height =
+    "auto";
+
+  image.style.maxWidth =
+    "90vw";
+
+  image.style.maxHeight =
+    "90vh";
+
+  image.style.transform =
+    "translate(-50%, -50%)";
+
+}
 /* =========================
    PAN + PINCH
 ========================= */
@@ -1158,9 +1188,33 @@ viewport.addEventListener(
    CLOSE IMAGE
 ========================= */
 
+/* =========================
+   CLOSE FULL IMAGE
+========================= */
+
 overlay.addEventListener(
   "click",
-  ()=>{
+  () => {
+
+    overlay.classList.remove(
+      "active"
+    );
+
+
+    const fullImage =
+      document.querySelector(
+        ".fullscreen-image"
+      );
+
+
+    if (fullImage) {
+
+      fullImage.remove();
+
+    }
+
+  }
+);
 
     overlay.classList.remove(
       "active"
