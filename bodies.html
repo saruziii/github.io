@@ -111,62 +111,64 @@ body{
    OVERLAY
 ========================= */
 
-#overlay{
+#overlay {
 
-  position:fixed;
+  position: fixed;
 
-  top:0;
+  inset: 0;
 
-  left:0;
+  width: 100vw;
+  height: 100vh;
 
-  width:100vw;
+  background: rgba(0,0,0,0.88);
 
-  height:100vh;
+  display: none;
 
-  background:rgba(0,0,0,0.75);
-
-  display:none;
-
-  z-index:9998;
+  z-index: 9998;
 
 }
 
+#overlay.active {
 
-#overlay.active{
-
-  display:block;
+  display: block;
 
 }
-
 
 /* =========================
    IMAGE ZOOM
 ========================= */
 
-.zoomed {
+/* =========================
+   FULL IMAGE VIEW
+========================= */
+
+.fullscreen-image {
+
   position: fixed !important;
 
   top: 50% !important;
   left: 50% !important;
 
-  transform: translate(-50%, -50%) !important;
+  width: auto !important;
+  height: auto !important;
 
   max-width: 90vw !important;
   max-height: 90vh !important;
 
-  width: auto !important;
-  height: auto !important;
+  transform:
+    translate(-50%, -50%) !important;
 
   object-fit: contain;
 
-  z-index: 9999 !important;
+  z-index: 10000 !important;
 
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+  margin: 0 !important;
+
+  pointer-events: none;
 
   box-shadow:
-    0 20px 60px rgba(0,0,0,0.35);
+    0 20px 80px rgba(0,0,0,0.45);
+
 }
 
 </style>
@@ -593,40 +595,94 @@ images.forEach((img)=>{
      DOUBLE TAP / CLICK
   ===================== */
 
-  img.addEventListener(
-    "dblclick",
-    (e)=>{
+  /* =========================
+   DOUBLE CLICK / TAP
+========================= */
 
-      e.stopPropagation();
+img.addEventListener(
+  "dblclick",
+  (e) => {
+
+    e.preventDefault();
+
+    e.stopPropagation();
 
 
-      img.classList.toggle(
-        "zoomed"
-      );
+    /* すでに表示されていたら終了 */
 
+    if (
+      document.querySelector(
+        ".fullscreen-image"
+      )
+    ) {
 
-      if(
-        img.classList.contains(
-          "zoomed"
-        )
-      ){
-
-        overlay.classList.add(
-          "active"
-        );
-
-      }else{
-
-        overlay.classList.remove(
-          "active"
-        );
-
-      }
+      return;
 
     }
-  );
 
-});
+
+    /* =====================
+       BACKGROUND
+    ===================== */
+
+    overlay.classList.add(
+      "active"
+    );
+
+
+    /* =====================
+       COPY IMAGE
+    ===================== */
+
+    const fullImage =
+      img.cloneNode(true);
+
+
+    fullImage.classList.remove(
+      "drag"
+    );
+
+
+    fullImage.classList.add(
+      "fullscreen-image"
+    );
+
+
+    /*
+      canvasの外、
+      body直下に置く
+    */
+
+    document.body.appendChild(
+      fullImage
+    );
+
+
+    /*
+      画像が読み込まれた後に
+      中央配置
+    */
+
+    if (fullImage.complete) {
+
+      centerFullImage(
+        fullImage
+      );
+
+    } else {
+
+      fullImage.onload = () => {
+
+        centerFullImage(
+          fullImage
+        );
+
+      };
+
+    }
+
+  }
+);
 
 
 /* =========================
